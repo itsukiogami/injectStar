@@ -1,0 +1,1 @@
+# ArtificialStarTest_for_hscPipe
