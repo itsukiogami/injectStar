@@ -34,7 +34,7 @@ This repositry describes a method for calculating a detection completeness using
   - When building the catalog, also include `tract` information. This is necessary for cross-matching input data and output data. This process is not a problem when creating a catalog for each tract, individually.
  
 5. Create a catalog for input data.
-  - After running `injectStar.py`, a file named `calexp~.fits.txt1 will be created under `~/<rerun>/deepCoadd-results/<filter>/<tract>/<patch>`. This is the catalog of artificial stars embedded in a patch of a tract.
+  - After running `injectStar.py`, a file named `calexp~.fits.txt` will be created under `~/<rerun>/deepCoadd-results/<filter>/<tract>/<patch>`. This is the catalog of artificial stars embedded in a patch of a tract.
   - These catalogs of input data (for each tract) are combined into one catalog, as follows:
     > `cat ~/<rerun>/deepCoadd/<filter>/<tract>/*.fits.txt > tract.txt`
 
