@@ -1,7 +1,7 @@
 # ArtificialStarTest_for_hscPipe
 This repositry describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond.
 
-【Flow of obtaining detection completeness】
+## Flow of obtaining detection completeness
 1. Copy `rerun` containing the image in which you want to embed the artificial star.
   - Since `injectStar.py` embeds the artificial star directly into the image, it is necessary to make a backup of the original.
   - Also, the copy of rerun must be executed every time the artificial star test is performed.
@@ -18,7 +18,7 @@ This repositry describes a method for calculating a detection completeness using
 
 3. Run `multiBandDriver.py` to perform the detection and photometry of images with embedded artificial stars.
   - `multiBandDriver.py` is executed as follows:
-    > multiBandDriver.py ~/HSC --calib ~/HSC/CALIB --rerun <rerun> --id filter=<filter> tract=<tract> --configfile config.py --clobber-config -- clobber-versions
+    > `multiBandDriver.py ~/HSC --calib ~/HSC/CALIB --rerun <rerun> --id filter=<filter> tract=<tract> --configfile config.py --clobber-config -- clobber-versions`
     - Be sure to describe all `<filter>` being analyzed.
     - You can specify multiple `<tract>`s.
     - `config.py` should be as follows.
