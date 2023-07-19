@@ -1,4 +1,4 @@
-# ArtificialStarTest_for_hscPipe
+# ArtificialStarTest_for_hscPipe (under construction)
 This repositry describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond.
 
 ## Flow of obtaining detection completeness
