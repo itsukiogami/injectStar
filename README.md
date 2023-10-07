@@ -1,4 +1,4 @@
-# ArtificialStarTest for hscPipe
+# Artificial Star Test for hscPipe
 This repositry describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond.
 The latest version of `injectStar.py` is version 4.
 
