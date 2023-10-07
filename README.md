@@ -1,5 +1,6 @@
 # ArtificialStarTest_for_hscPipe (under construction)
 This repositry describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond.
+The latest version of `injectStar.py` is version 4.
 
 ## Flow of obtaining detection completeness
 1. Copy `rerun` containing the image (e.g., ~/<rerun>/deepCoadd/<filter>/4,4.fits) in which you want to inject the artificial star.
