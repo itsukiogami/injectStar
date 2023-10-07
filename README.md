@@ -3,7 +3,9 @@ This repositry describes a method for calculating a detection completeness using
 The latest version of `injectStar.py` is version 4.
 
 ## Flow of obtaining detection completeness
-1. Copy `rerun` containing the image (e.g., ~/<rerun>/deepCoadd/<filter>/4,4.fits) in which you want to inject the artificial star.
+0. As with other hscPipe commands, run `setup-hscpipe` or `setup hscPipe 8.4`.
+   
+1. Copy `rerun` containing the image (e.g., `~/<rerun>/deepCoadd/<filter>/4,4.fits`) in which you want to inject the artificial star.
   - Since `injectStar.py` embeds artificial stars directly into the image, it is necessary to make a backup of original images.
   - Also, a copy of rerun must be executed every time the artificial star test is performed.
   - This is because artificial stars are embedded again in the image in which artificial stars are embedded.
