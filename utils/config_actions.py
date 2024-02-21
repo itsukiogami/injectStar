@@ -24,10 +24,11 @@ def make_config(loc):
                       'mail-user': 'jon.doe@email.com'
                      }
    
-   config['other'] = {'delete_job': False,
-                      'create_catalogue': True,
-                      'crossmatch_catalogue': True
-                     }
+   # TODO: Edit this once the required features are agreed upon.
+   # config['other'] = {'delete_job': False,
+   #                    'create_catalogue': True,
+   #                    'crossmatch_catalogue': True
+   #                   }
    
    with open(loc+'config.txt', 'w') as configfile:
       config.write(configfile)
