@@ -20,16 +20,24 @@ def write_sbatch(file, mag):
         file.write(f'#SBATCH --mail-user={config['mail-user']}\n')
 
 def write_hscInit(file):
+    config = read_config('hscPipe')
+    hscdir = os.path.dirname(os.path.dirname(os.path.normpath(config['rerun'])))
+    origrerun = os.path.normpath(config['rerun'])
+    rerun = os.path.dirname(os.path.normpath(config['rerun'])) + '/artest'
+
     file.write('\nexport OMP_NUM_THREADS = 1\n')
     file.write('setup-hscpipe\n')
+    file.write(f'export HSC={hscdir}\n')
+    file.write(f'export origrerun=\'{origrerun}\'\n')
+    file.write(f'export rerun={rerun}\n')
 
 def write_detectCoadd(file, filtkey, mag):
     config = read_config('hscPipe')
 
     command = 'detectCoaddSources.py'
-    command += f' {os.path.dirname(os.path.dirname(os.path.normpath(config['rerun'])))}'
-    command += f' --calib {os.path.dirname(os.path.normpath(config['rerun']))}/CALIB'
-    command += f' --rerun {os.path.normpath(config['rerun']).rstrip('/') + '_artest/'}'
+    command += f' $HSC'
+    command += f' --calib $HSC/CALIB'
+    command += f' --rerun $rerun'
     command += f' --id filter={config[filtkey]}'
     command += f' tract={config['tract']}'
     command += ' --clobber-config'
@@ -42,9 +50,9 @@ def write_multiBand(file, filtstring, mag):
     config = read_config('hscPipe')
     
     command = 'multiBandDriver.py'
-    command += f' {os.path.dirname(os.path.dirname(os.path.normpath(config['rerun'])))}'
-    command += f' --calib {os.path.dirname(os.path.normpath(config['rerun']))}/CALIB'
-    command += f' --rerun {os.path.normpath(config['rerun']).rstrip('/') + '_artest/'}'
+    command += f' $HSC'
+    command += ' --calib $HSC/CALIB'
+    command += ' --rerun $rerun'
     command += f' --id filter={filtstring}'
     command += f' tract={config['tract']}'
     command += ' --configfile artest_config.py'
@@ -60,7 +68,7 @@ def write_multiBand(file, filtstring, mag):
 def write_injectStar(file, filter, mag):
     config = read_config('hscPipe')
     command = 'python3 injectStar_ver4.py'
-    command += f' {os.path.normpath(config['rerun']).rstrip('/') + '_artest/'}'
+    command += ' $rerun'
     command += f' {config[filter]}'
     command += f' {config['tract']}'
     command += f' {mag}'
@@ -71,7 +79,7 @@ def write_injectStar(file, filter, mag):
 def write_inputCat(file):
     config = read_config('hscPipe')
     rerun = os.path.normpath(config['rerun']).rstrip('/') + '_artest/'
-    command = f'cat {rerun}deepCoadd/{config['filter1']}/{config['tract']}/*.fits.txt > inputCat.txt'
+    command = f'cat $rerun/deepCoadd/{config['filter1']}/{config['tract']}/*.fits.txt > inputCat.txt'
     command += '\n'
 
     file.write(command)
@@ -79,13 +87,12 @@ def write_inputCat(file):
 def write_copyRerun(file):
     config = read_config('hscPipe')
     artest_path = os.path.normpath(config['rerun']).rstrip('/') + '_artest/'
-    command = f'cp -r {os.path.normpath(config['rerun'])} {artest_path}\n'
+    command = 'cp -r $origrerun $rerun\n'
 
     file.write(command)
 
 def write_removeRerun(file):
     config = read_config('hscPipe')
-    artest_path = os.path.normpath(config['rerun']).rstrip('/') + '_artest/'
-    command = f'rm -r {artest_path}\n'
+    command = 'rm -r $rerun\n'
 
     file.write(command)

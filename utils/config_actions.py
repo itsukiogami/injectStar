@@ -10,12 +10,13 @@ def read_config(section):
 def make_config(loc):
    config = configparser.ConfigParser()
    config['hscPipe'] = {'tract': 0, 
-                           'rerun': '/absolute/path/to/rerun/',
+                           'rerun': '/absolute/path/to/HSC/rerun/m31/',
                            'cores': 8,
                            'mag_start': 24,
                            'mag_end': 25,
                            'mag_step': 0.5,
-                           'filter1': 'HSC-G'
+                           'filter1': 'HSC-G',
+                           'filter2': 'HSC-I2'
                            }
    config['slurm'] = {'ntasks': 1,
                       'time': '240:00:00',
@@ -45,8 +46,8 @@ def make_configMulti(loc):
    file.close()
 
 
-def join_filter(config):
-   # Join filter values with '^' separator
-   filter_string = '^'.join([config[key] for key in sorted(config.keys()) if key.startswith('filter')])
+# def join_filter(config):
+#    # Join filter values with '^' separator
+#    filter_string = '^'.join([config[key] for key in sorted(config.keys()) if key.startswith('filter')])
 
-   return filter_string
+#    return filter_string

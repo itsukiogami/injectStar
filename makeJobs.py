@@ -64,13 +64,13 @@ def main(args):
 
         file.write('\n# Step 8: Delete the temporary coadd directory.\n')
         file.write('echo "Deleting the temporary rerun directory."\n')
-        bash_actions.write_copyRerun(file)
+        bash_actions.write_removeRerun(file)
 
         file.write('\necho "Job completed successfully!"\n')
         file.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Use makeJobs.py to generate BASH or SLURM batch files.')
-    parser.add_argument('--use_slurm', action='store_true', help='Use SLURM for execution')
+    parser.add_argument('--use_slurm', action='store_true', help='Add SLURM commands to job files.')
     args = parser.parse_args()
     main(args)
