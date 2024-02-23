@@ -1,8 +1,8 @@
 import os
 import numpy as np
-import utils.bash_actions as bash_actions
 import argparse
-from utils.config_actions import read_config
+import injectStar.utils.bash_actions as bash_actions
+from injectStar.utils.config_actions import read_config
 
 
 def main(args):

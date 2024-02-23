@@ -1,5 +1,5 @@
 import os
-from utils.config_actions import read_config
+from injectStar.utils.config_actions import read_config
 
 def write_shebang(file):
     file.write('#!/bin/bash\n')
@@ -67,7 +67,7 @@ def write_multiBand(file, filtstring, mag):
 
 def write_injectStar(file, filter, mag):
     config = read_config('hscPipe')
-    command = 'python3 injectStar_ver4.py'
+    command = 'python3 -m injectStar.injectStar_ver4'
     command += ' $rerun'
     command += f' {config[filter]}'
     command += f' {config['tract']}'

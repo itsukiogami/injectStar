@@ -1,4 +1,4 @@
-import utils.config_actions as config_actions
+import injectStar.utils.config_actions as config_actions
 import argparse
 
 def main():
