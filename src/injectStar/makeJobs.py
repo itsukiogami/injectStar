@@ -20,7 +20,7 @@ def main(args):
     # Iterate over magnitudes and fill in the .sbatch files
     for mag in mags:
         # Generate file
-        fname = f'{os.path.basename(os.path.normpath(config['rerun']))}_{mag}.{suffix}'
+        fname = f"{os.path.basename(os.path.normpath(config['rerun']))}_{mag}.{suffix}"
         file = open(fname, 'w')
 
         # Write bash/slurm/hscpipe initialisations
