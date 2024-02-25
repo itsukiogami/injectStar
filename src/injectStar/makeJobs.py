@@ -8,7 +8,6 @@ from injectStar.utils.config_actions import read_config
 def main(args):
     # Read in config and generate magnitudes
     config = read_config('hscPipe')
-
     # TODO Are same-magnitude pairs enough, or should we make a grid?
     mags = np.arange(float(config['mag_start']), float(config['mag_end']) + float(config['mag_step']), float(config['mag_step']))
     
@@ -42,12 +41,12 @@ def main(args):
         file.write('\n# Step 3: Run detectCoaddSources on all filters.\n')
         file.write('echo "Running detectCoaddSources."\n')
         for key in filtkeys:
-            bash_actions.write_detectCoadd(file, key, mag)
+            bash_actions.write_detectCoadd(file, key)
 
         file.write('\n# Step 4: Run multiBandDriver on all filters simultaneously.\n')
         file.write('echo "Running multiBandDriver."\n')
         filtstring = '^'.join([config[key] for key in filtkeys])
-        bash_actions.write_multiBand(file, filtstring, mag)
+        bash_actions.write_multiBand(file, filtstring)
 
         # TODO: Output catalog creation command (Might need to write a separate script for that!)
         file.write('\n# Step 5: Generate a catalogue of output data.\n')
@@ -70,7 +69,7 @@ def main(args):
         file.close()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Use makeJobs.py to generate BASH or SLURM batch files.')
+    parser = argparse.ArgumentParser(description='Use makeJobs.py to generate BASH or SLURM batch files to run artificial star tests.')
     parser.add_argument('--use_slurm', action='store_true', help='Add SLURM commands to job files.')
     args = parser.parse_args()
     main(args)

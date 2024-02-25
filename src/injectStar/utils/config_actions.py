@@ -2,12 +2,29 @@ import configparser
 import re
  
 def read_config(section):
+   '''
+    Reads the specified section from the configuration file 'config.txt'.
+
+    Parameters:
+    - section: A string representing the section name in the configuration file.
+
+    Returns:
+    A dictionary containing the configuration options from the specified section.
+    '''
    config = configparser.ConfigParser()
-   # config.read('./test_config.ini')
    config.read('./config.txt')
    return config[section]
 
 def make_config(loc):
+   '''
+    Creates a configuration file 'config.txt' with predefined settings and writes it to the specified location.
+
+    Parameters:
+    - loc: A string representing the directory path where the configuration file will be saved.
+
+    Returns:
+    None
+    '''
    config = configparser.ConfigParser()
    config['hscPipe'] = {'tract': 0, 
                            'rerun': '/absolute/path/to/HSC/rerun/m31/',
@@ -35,6 +52,15 @@ def make_config(loc):
       config.write(configfile)
 
 def make_configMulti(loc):
+   '''
+    Creates a configuration file 'artest_config.py' with predefined settings used to run multiBandDriver.py and writes it to the specified location.
+
+    Parameters:
+    - loc: A string representing the directory path where the configuration file will be saved.
+
+    Returns:
+    None
+    '''
    file = open(loc+'artest_config.py', 'w')
 
    file.write('config.doDetection=True\n')
@@ -44,10 +70,3 @@ def make_configMulti(loc):
    file.write('config.forcedPhotCoadd.measurement.plugins[\'base_PixelFlags\'].masksFpCenter=[\'CLIPPED\', \'SENSOR_EDGE\', \'REJECTED\', \'INEXACT_PSF\', \'BRIGHT_OBJECT\', \'FAKE\']\n')
    
    file.close()
-
-
-# def join_filter(config):
-#    # Join filter values with '^' separator
-#    filter_string = '^'.join([config[key] for key in sorted(config.keys()) if key.startswith('filter')])
-
-#    return filter_string
