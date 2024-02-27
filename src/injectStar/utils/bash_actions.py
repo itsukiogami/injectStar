@@ -29,11 +29,11 @@ def write_hscInit(file):
     origrerun = os.path.normpath(config['rerun'])
     rerun = os.path.dirname(os.path.normpath(config['rerun'])) + '/artest'
 
-    file.write('\nexport OMP_NUM_THREADS = 1\n')
+    file.write('\nexport OMP_NUM_THREADS=1\n')
     file.write('setup-hscpipe\n')
-    file.write(f"export HSC={hscdir}\n")
+    file.write(f"export HSC=\'{hscdir}\'\n")
     file.write(f"export origrerun=\'{origrerun}\'\n")
-    file.write(f"export rerun={rerun}\n")
+    file.write(f"export rerun=\'{rerun}\'\n")
 
 
 def write_detectCoadd(file, filtkey, mag):
