@@ -1,6 +1,7 @@
 import os
 from injectStar.utils.config_actions import read_config
 
+
 def write_shebang(file):
     '''
     Writes a shebang line to the beginning of the specified file.
@@ -12,6 +13,7 @@ def write_shebang(file):
     None
     '''
     file.write('#!/bin/bash\n')
+
 
 def write_sbatch(file, mag):
     '''
@@ -38,6 +40,7 @@ def write_sbatch(file, mag):
         file.write(f"#SBATCH --mail-type={config['mail-type']}\n")
         file.write(f"#SBATCH --mail-user={config['mail-user']}\n")
 
+
 def write_hscInit(file):
     '''
     Writes initialization parameters and exports for hscPipe to the specified file.
@@ -49,15 +52,17 @@ def write_hscInit(file):
     None
     '''
     config = read_config('hscPipe')
-    hscdir = os.path.dirname(os.path.dirname(os.path.normpath(config['rerun'])))
+    hscdir = os.path.dirname(
+        os.path.dirname(os.path.normpath(config['rerun'])))
     origrerun = os.path.normpath(config['rerun'])
     rerun = os.path.dirname(os.path.normpath(config['rerun'])) + '/artest'
 
-    file.write('\nexport OMP_NUM_THREADS = 1\n')
+    file.write('\nexport OMP_NUM_THREADS=1\n')
     file.write('setup-hscpipe\n')
-    file.write(f"export HSC={hscdir}\n")
+    file.write(f"export HSC=\'{hscdir}\'\n")
     file.write(f"export origrerun=\'{origrerun}\'\n")
-    file.write(f"export rerun={rerun}\n")
+    file.write(f"export rerun=\'{rerun}\'\n")
+
 
 def write_detectCoadd(file, filtkey):
     '''
@@ -73,9 +78,9 @@ def write_detectCoadd(file, filtkey):
     config = read_config('hscPipe')
 
     command = 'detectCoaddSources.py'
-    command += f' $HSC'
-    command += f' --calib $HSC/CALIB'
-    command += f' --rerun $rerun'
+    command += ' $HSC'
+    command += ' --calib $HSC/CALIB'
+    command += ' --rerun $rerun'
     command += f" --id filter={config[filtkey]}"
     command += f" tract={config['tract']}"
     command += ' --clobber-config'
@@ -96,7 +101,7 @@ def write_multiBand(file, filtstring):
     None
     '''
     config = read_config('hscPipe')
-    
+
     command = 'multiBandDriver.py'
     command += ' $HSC'
     command += ' --calib $HSC/CALIB'
@@ -108,10 +113,11 @@ def write_multiBand(file, filtstring):
     command += ' --clobber-versions'
     command += ' --batch-type=smp'
     command += f" --cores={config['cores']}"
-    
+
     command += '\n'
 
     file.write(command)
+
 
 def write_injectStar(file, filter, mag):
     '''
@@ -135,6 +141,7 @@ def write_injectStar(file, filter, mag):
 
     file.write(command)
 
+
 def write_inputCat(file):
     '''
     Writes down the command to concatenate input catalogs to the specified file.
@@ -146,8 +153,7 @@ def write_inputCat(file):
     None
     '''
     config = read_config('hscPipe')
-    rerun = os.path.normpath(config['rerun']).rstrip('/') + '_artest/'
-    command = f"cat $rerun/deepCoadd/{config['filter1']}/{config['tract']}/*.fits.txt > inputCat.txt"
+    command = f"cat $rerun/deepCoadd/{config['filter1']}/{config['tract']}*.fits.txt > inputCat.txt"
     command += '\n'
 
     file.write(command)
@@ -162,11 +168,9 @@ def write_copyRerun(file):
     Returns:
     None
     '''
-    config = read_config('hscPipe')
-    artest_path = os.path.normpath(config['rerun']).rstrip('/') + '_artest/'
     command = 'cp -r $origrerun $rerun\n'
-
     file.write(command)
+
 
 def write_removeRerun(file):
     '''
@@ -178,7 +182,5 @@ def write_removeRerun(file):
     Returns:
     None
     '''
-    config = read_config('hscPipe')
     command = 'rm -r $rerun\n'
-
     file.write(command)

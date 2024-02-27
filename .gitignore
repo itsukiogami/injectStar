@@ -7,3 +7,4 @@
 
 # Distribution / packaging
 *.egg-info/
+*pip-wheel-metadata/
