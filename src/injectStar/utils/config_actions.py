@@ -1,23 +1,24 @@
 import configparser
-import re
- 
+
+
 def read_config(section):
    config = configparser.ConfigParser()
    # config.read('./test_config.ini')
    config.read('./config.txt')
    return config[section]
 
+
 def make_config(loc):
    config = configparser.ConfigParser()
    config['hscPipe'] = {'tract': 0, 
-                           'rerun': '/absolute/path/to/HSC/rerun/m31/',
-                           'cores': 8,
-                           'mag_start': 24,
-                           'mag_end': 25,
-                           'mag_step': 0.5,
-                           'filter1': 'HSC-G',
-                           'filter2': 'HSC-I2'
-                           }
+                        'rerun': '/absolute/path/to/HSC/rerun/m31/',
+                        'cores': 8,
+                        'mag_start': 24,
+                        'mag_end': 25,
+                        'mag_step': 0.5,
+                        'filter1': 'HSC-G',
+                        'filter2': 'HSC-I2'
+                        }
    config['slurm'] = {'ntasks': 1,
                       'time': '240:00:00',
                       'memory': '200G',
