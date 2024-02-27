@@ -86,8 +86,7 @@ def write_injectStar(file, filter, mag):
 
 def write_inputCat(file):
     config = read_config('hscPipe')
-    command = f"cat $rerun/deepCoadd/{config['filter1']}/{config['tract']}\
-    /*.fits.txt > inputCat.txt"
+    command = f"cat $rerun/deepCoadd/{config['filter1']}/{config['tract']}*.fits.txt > inputCat.txt"
     command += '\n'
 
     file.write(command)
