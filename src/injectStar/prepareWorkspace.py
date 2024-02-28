@@ -1,11 +1,19 @@
-import injectStar.utils.config_actions as config_actions
 import argparse
+import injectStar.utils.config_actions as config_actions
 
-def main():
+
+def main(args):
     config_actions.make_configMulti('./')
     config_actions.make_config('./')
 
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Use prepareWorkspace.py to create '
+        '(or reinitialise) config files.'
+        )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Use prepareWorkspace.py to create (or reinitialise) config files.')
-    args = parser.parse_args()
-    main()
+    main(parse_args())

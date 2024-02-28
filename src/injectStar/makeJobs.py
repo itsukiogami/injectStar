@@ -29,7 +29,7 @@ def main(args):
         # Write bash/slurm/hscpipe initialisations
         bash_actions.write_shebang(file)
         if args.use_slurm:
-            bash_actions.write_sbatch(file, mag)
+            bash_actions.write_sbatch(file)
         bash_actions.write_hscInit(file)
 
         file.write('\n# Step 1: Copy the rerun directory.\n')
@@ -41,14 +41,15 @@ def main(args):
         filtkeys = [key for key in sorted(config.keys())
                     if key.startswith('filter')]
         for key in filtkeys:
-            bash_actions.write_injectStar(file, key, mag)
+            bash_actions.write_injectStar(file, config[key], mag)
 
         file.write('\n# Step 3: Run detectCoaddSources on all filters.\n')
         file.write('echo "Running detectCoaddSources."\n')
         for key in filtkeys:
             bash_actions.write_detectCoadd(file, key)
 
-        file.write('\n# Step 4: Run multiBandDriver on all filters simultaneously.\n')
+        file.write('\n# Step 4: Run multiBandDriver on all filters" \
+                   " simultaneously.\n')
         file.write('echo "Running multiBandDriver."\n')
         filtstring = '^'.join([config[key] for key in filtkeys])
         bash_actions.write_multiBand(file, filtstring)
@@ -68,9 +69,10 @@ def main(args):
         file.write('\n# Step 7: Cross-match input and output catalogues.\n')
         file.write('echo "Cross-matching catalogues."\n')
 
-        file.write('\n# Step 8: Delete the temporary coadd directory.\n')
-        file.write('echo "Deleting the temporary rerun directory."\n')
-        bash_actions.write_removeRerun(file)
+        # Currently not deleting the rerun directory due to rsync
+        # file.write('\n# Step 8: Delete the temporary coadd directory.\n')
+        # file.write('echo "Deleting the temporary rerun directory."\n')
+        # bash_actions.write_removeRerun(file)
 
         file.write('\necho "Job completed successfully!"\n')
         file.close()
