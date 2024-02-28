@@ -27,32 +27,32 @@ def main(args):
         file = open(fname, 'w')
 
         # Write bash/slurm/hscpipe initialisations
-        bash_actions.write_shebang(file)
+        bash_actions.shebang(file)
         if args.use_slurm:
-            bash_actions.write_sbatch(file)
-        bash_actions.write_hscInit(file)
+            bash_actions.sbatch(file)
+        bash_actions.hsc_init(file)
 
         file.write('\n# Step 1: Copy the rerun directory.\n')
         file.write('echo "Copying the rerun directory."\n')
-        bash_actions.write_copyRerun(file)
+        bash_actions.copy_rerun(file)
 
         file.write('\n# Step 2: Run injectStar on all filters.\n')
         file.write('echo "Running injectStar."\n')
         filtkeys = [key for key in sorted(config.keys())
                     if key.startswith('filter')]
         for key in filtkeys:
-            bash_actions.write_injectStar(file, config[key], mag)
+            bash_actions.inject_star(file, config[key], mag)
 
         file.write('\n# Step 3: Run detectCoaddSources on all filters.\n')
         file.write('echo "Running detectCoaddSources."\n')
         for key in filtkeys:
-            bash_actions.write_detectCoadd(file, key)
+            bash_actions.detect_coadd(file, key)
 
         file.write('\n# Step 4: Run multiBandDriver on all filters" \
                    " simultaneously.\n')
         file.write('echo "Running multiBandDriver."\n')
         filtstring = '^'.join([config[key] for key in filtkeys])
-        bash_actions.write_multiBand(file, filtstring)
+        bash_actions.multi_band(file, filtstring)
 
         # TODO: Output catalog creation command
         # (Might need to write a separate script for that!)
@@ -62,7 +62,7 @@ def main(args):
         # TODO: Check if one filter is enough for this
         file.write('\n# Step 6: Generate a catalogue of all input sources.\n')
         file.write('echo "Generating input catalogue."\n')
-        bash_actions.write_inputCat(file)
+        bash_actions.input_cat(file)
 
         # TODO: Cross-match command
         # (Might need to write a separate script for that!)
@@ -72,7 +72,7 @@ def main(args):
         # Currently not deleting the rerun directory due to rsync
         # file.write('\n# Step 8: Delete the temporary coadd directory.\n')
         # file.write('echo "Deleting the temporary rerun directory."\n')
-        # bash_actions.write_removeRerun(file)
+        # bash_actions.remove_rerun(file)
 
         file.write('\necho "Job completed successfully!"\n')
         file.close()

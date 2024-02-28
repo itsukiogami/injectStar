@@ -2,7 +2,7 @@ import os
 from injectStar.utils.config_actions import read_config
 
 
-def write_shebang(file):
+def shebang(file):
     '''
     Writes a shebang line to the beginning of the specified file.
 
@@ -15,7 +15,7 @@ def write_shebang(file):
     file.write('#!/bin/bash\n')
 
 
-def write_sbatch(file):
+def sbatch(file):
     '''
     Writes Slurm batch job configuration to the specified file
     based on provided parameters.
@@ -42,7 +42,7 @@ def write_sbatch(file):
         file.write(f"#SBATCH --mail-user={config['mail-user']}\n")
 
 
-def write_hscInit(file):
+def hsc_init(file):
     '''
     Writes initialization parameters and exports for hscPipe
     to the specified file.
@@ -66,7 +66,7 @@ def write_hscInit(file):
     file.write(f"export rerun=\'{rerun}\'\n")
 
 
-def write_detectCoadd(file, filtkey):
+def detect_coadd(file, filtkey):
     '''
     Writes down the command to run detectCoaddSources to the specified file.
 
@@ -92,7 +92,7 @@ def write_detectCoadd(file, filtkey):
     file.write(command)
 
 
-def write_multiBand(file, filtstring):
+def multi_band(file, filtstring):
     '''
     Writes down the command to run multiBandDriver.py to the specified file.
 
@@ -122,7 +122,7 @@ def write_multiBand(file, filtstring):
     file.write(command)
 
 
-def write_injectStar(file, filt, mag):
+def inject_star(file, filt, mag):
     '''
     Writes down the command to run injectStar_ver4 from the
     injectStar module to the specified file.
@@ -146,7 +146,7 @@ def write_injectStar(file, filt, mag):
     file.write(command)
 
 
-def write_inputCat(file):
+def input_cat(file):
     '''
     Writes down the command to concatenate input catalogs
     to the specified file.
@@ -165,7 +165,7 @@ def write_inputCat(file):
     file.write(command)
 
 
-def write_copyRerun(file):
+def copy_rerun(file):
     '''
     Writes down the command to copy the rerun directory to a
     new temporary directory named "artest/".
@@ -181,7 +181,7 @@ def write_copyRerun(file):
     file.write(command)
 
 
-def write_removeRerun(file):
+def remove_rerun(file):
     '''
     Writes down the command to remove the temporary rerun directory.
 
