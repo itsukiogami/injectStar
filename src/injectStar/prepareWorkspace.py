@@ -3,7 +3,7 @@ import injectStar.utils.config_actions as config_actions
 
 
 def main(args):
-    config_actions.make_configMulti('./')
+    config_actions.make_config_multi('./')
     config_actions.make_config('./')
 
 
