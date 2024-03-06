@@ -1,7 +1,7 @@
 import configparser
 
 
-def read_config(section):
+def read_config(config_file='./config.txt'):
     '''
     Reads the specified section from the configuration file 'config.txt'.
 
@@ -14,8 +14,8 @@ def read_config(section):
     from the specified section.
     '''
     config = configparser.ConfigParser()
-    config.read('./config.txt')
-    return config[section]
+    config.read(config_file)
+    return config
 
 
 def make_config(loc):
@@ -90,3 +90,33 @@ def make_config_multi(loc):
                ', \'BRIGHT_OBJECT\', \'FAKE\']\n')
 
     file.close()
+
+
+def make_setuphsc(loc):
+    '''
+    Creates a configuration file 'setuphsc.txt' used to set up
+    hscPipe to the specified location.
+
+    Parameters:
+    - loc: A string representing the directory path where
+    the configuration file will be saved.
+
+    Returns:
+    None
+    '''
+    file = open(loc+'setuphsc.txt', 'w')
+
+    file.write('# Write your hscPipe setup configuration here, e.g.\n'
+               '# setup-hscpipe\n'
+               '# or \n'
+               '# source /some/directory/hscpipe/8.4/loadLSST.bash\n'
+               '# setup hscPipe 8.4\n\n')
+    file.write('setup-hscpipe\n')
+    file.close()
+
+
+def read_setuphsc(fname='./setuphsc.txt'):
+    with open(fname) as f:
+        lines = filter(None, (line.rstrip() for line in f
+                              if not line.startswith('#')))
+        return '\n'.join(lines)

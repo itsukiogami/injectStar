@@ -2,18 +2,23 @@ import os
 import argparse
 import numpy as np
 import injectStar.utils.bash_actions as bash_actions
-from injectStar.utils.config_actions import read_config
+import injectStar.utils.config_actions as config_actions
 
 
 def main(args):
     # Read in config and generate magnitudes
-    config = read_config('hscPipe')
+    config = config_actions.read_config()
+    hscconfig = config['hscPipe']
+    setuphsc = config_actions.read_setuphsc()
+
     # TODO Are same-magnitude pairs enough, or should we make a grid?
-    mags = np.arange(float(config['mag_start']), float(config['mag_end']) +
-                     float(config['mag_step']), float(config['mag_step']))
+    mags = np.arange(float(hscconfig['mag_start']),
+                     float(hscconfig['mag_end']) +
+                     float(hscconfig['mag_step']),
+                     float(hscconfig['mag_step']))
 
     # Rerun name for naming job files
-    rerunname = os.path.basename(os.path.normpath(config['rerun']))
+    rerunname = os.path.basename(os.path.normpath(hscconfig['rerun']))
 
     if args.use_slurm:
         suffix = 'sbatch'
@@ -29,8 +34,8 @@ def main(args):
         # Write bash/slurm/hscpipe initialisations
         bash_actions.shebang(file)
         if args.use_slurm:
-            bash_actions.sbatch(file)
-        bash_actions.hsc_init(file)
+            bash_actions.sbatch(config, file, mag)
+        bash_actions.hsc_init(config, setuphsc, file)
 
         file.write('\n# Step 1: Copy the rerun directory.\n')
         file.write('echo "Copying the rerun directory."\n')
@@ -38,31 +43,31 @@ def main(args):
 
         file.write('\n# Step 2: Run injectStar on all filters.\n')
         file.write('echo "Running injectStar."\n')
-        filtkeys = [key for key in sorted(config.keys())
+        filtkeys = [key for key in sorted(hscconfig.keys())
                     if key.startswith('filter')]
         for key in filtkeys:
-            bash_actions.inject_star(file, config[key], mag)
+            bash_actions.inject_star(config, file, hscconfig[key], mag)
 
         file.write('\n# Step 3: Run detectCoaddSources on all filters.\n')
         file.write('echo "Running detectCoaddSources."\n')
         for key in filtkeys:
-            bash_actions.detect_coadd(file, key)
+            bash_actions.detect_coadd(config, file, key)
 
-        file.write('\n# Step 4: Run multiBandDriver on all filters" \
-                   " simultaneously.\n')
+        file.write("\n# Step 4: Run multiBandDriver on all filters"
+                   " simultaneously.\n")
         file.write('echo "Running multiBandDriver."\n')
-        filtstring = '^'.join([config[key] for key in filtkeys])
-        bash_actions.multi_band(file, filtstring)
+        filtstring = '^'.join([hscconfig[key] for key in filtkeys])
+        bash_actions.multi_band(config, file, filtstring)
 
         # TODO: Output catalog creation command
         # (Might need to write a separate script for that!)
         file.write('\n# Step 5: Generate a catalogue of output data.\n')
-        file.write('echo "Generating output catalogue."\n')
+        file.write('echo "Generating the output catalogue."\n')
 
         # TODO: Check if one filter is enough for this
         file.write('\n# Step 6: Generate a catalogue of all input sources.\n')
-        file.write('echo "Generating input catalogue."\n')
-        bash_actions.input_cat(file)
+        file.write('echo "Generating the input catalogue."\n')
+        bash_actions.input_cat(config, file)
 
         # TODO: Cross-match command
         # (Might need to write a separate script for that!)
