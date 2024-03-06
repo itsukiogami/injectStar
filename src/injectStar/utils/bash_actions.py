@@ -58,10 +58,9 @@ def hsc_init(config, setuphsc, file):
     None
     '''
     hscconfig = config['hscPipe']
-    hscdir = os.path.dirname(
-        os.path.dirname(os.path.normpath(hscconfig['rerun'])))
-    origrerun = os.path.normpath(hscconfig['rerun'])
-    rerun = os.path.dirname(os.path.normpath(hscconfig['rerun'])) + '/artest'
+    origrerun = os.path.normpath(hscconfig['rerun']).replace(os.sep, '/')
+    hscdir = os.path.dirname(os.path.dirname(origrerun))
+    rerun = os.path.dirname(origrerun) + '/artest'
 
     file.write(f"\n{setuphsc}")
     file.write('\nexport OMP_NUM_THREADS=1\n')
@@ -77,7 +76,7 @@ def detect_coadd(config, file, filtkey):
     Parameters:
     - config: The config instance containing the configuration parameters.
     - file: The file object to write the detectCoaddSources command to.
-    - filtkey: A string representing the filter.
+    - filtkey: A string representing the filter ID key (e.g. "filter1").
 
     Returns:
     None
