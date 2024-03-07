@@ -22,7 +22,7 @@ def sbatch(config, file, mag):
     Parameters:
     - config: The config instance containing the configuration parameters.
     - file: The file object to write Slurm configuration to.
-    - mag: An integer representing the magnitude.
+    - mag: A string representing the magnitude.
 
     Returns:
     None
@@ -136,7 +136,7 @@ def inject_star(config, file, filt, mag):
     - config: The config instance containing the configuration parameters.
     - file: The file object to write the injectStar command to.
     - filter: A string representing the filter ID.
-    - mag: An integer representing the magnitude.
+    - mag: A string representing the magnitude.
 
     Returns:
     None
@@ -152,7 +152,7 @@ def inject_star(config, file, filt, mag):
     file.write(command)
 
 
-def input_cat(config, file):
+def input_cat(config, file, mag):
     '''
     Writes down the command to concatenate input catalogs
     to the specified file.
@@ -166,7 +166,7 @@ def input_cat(config, file):
     '''
     hscconfig = config['hscPipe']
     command = f"cat $rerun/deepCoadd/{hscconfig['filter1']}" \
-              f"/{hscconfig['tract']}/*.fits.txt > inputCat.txt"
+              f"/{hscconfig['tract']}/*.fits.txt > inputCat_{mag}.txt"
     command += '\n'
 
     file.write(command)

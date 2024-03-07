@@ -67,7 +67,7 @@ def main(args):
         # TODO: Check if one filter is enough for this
         file.write('\n# Step 6: Generate a catalogue of all input sources.\n')
         file.write('echo "Generating the input catalogue."\n')
-        bash_actions.input_cat(config, file)
+        bash_actions.input_cat(config, file, mag)
 
         # TODO: Cross-match command
         # (Might need to write a separate script for that!)
