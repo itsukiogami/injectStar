@@ -166,7 +166,7 @@ def input_cat(config, file):
     '''
     hscconfig = config['hscPipe']
     command = f"cat $rerun/deepCoadd/{hscconfig['filter1']}" \
-              f"/{hscconfig['tract']}*.fits.txt > inputCat.txt"
+              f"/{hscconfig['tract']}/*.fits.txt > inputCat.txt"
     command += '\n'
 
     file.write(command)
