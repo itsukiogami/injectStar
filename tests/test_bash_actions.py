@@ -1,7 +1,7 @@
-import pytest
 import configparser
 from io import StringIO
 from unittest.mock import patch, MagicMock
+import pytest
 from injectStar.utils import bash_actions
 
 

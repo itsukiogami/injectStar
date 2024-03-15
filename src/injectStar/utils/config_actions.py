@@ -1,4 +1,5 @@
 import configparser
+import os
 
 
 def read_config(config_file='./config.txt'):
@@ -34,11 +35,14 @@ def make_config(loc):
     config['hscPipe'] = {'tract': 0,
                          'rerun': '/absolute/path/to/HSC/rerun/m31/',
                          'cores': 8,
-                         'mag_start': 24,
-                         'mag_end': 25,
+                         'filters': 2,
                          'mag_step': 0.5,
                          'filter1': 'HSC-G',
-                         'filter2': 'HSC-I2'
+                         'mag_start1': 24,
+                         'mag_end1': 25,
+                         'filter2': 'HSC-I2',
+                         'mag_start2': 24,
+                         'mag_end2': 25,
                          }
     config['slurm'] = {'ntasks': 1,
                        'time': '240:00:00',
@@ -46,13 +50,17 @@ def make_config(loc):
                        'mail-type': 'END',
                        'mail-user': 'your.email@email.com'}
 
-    # TODO: Edit this once the required features are agreed upon.
-    # config['other'] = {'delete_job': False,
-    #                    'create_catalogue': True,
-    #                    'crossmatch_catalogue': True
-    #                   }
+    config['dirs'] = {'workspace': os.getcwd(),
+                      'output': f"{os.getcwd()}/output",
+                      'input': f"{os.getcwd()}/input",
+                      'jobs': f"{os.getcwd()}/jobs"
+                      }
 
-    with open(loc+'config.txt', 'w') as configfile:
+    create_directory('./input')
+    create_directory('./output')
+    create_directory('./jobs')
+
+    with open(loc+'config.txt', 'w', encoding="utf-8") as configfile:
         config.write(configfile)
 
 
@@ -69,7 +77,7 @@ def make_config_multi(loc):
     Returns:
     None
     '''
-    file = open(loc+'artest_config.py', 'w')
+    file = open(loc+'artest_config.py', 'w', encoding="utf-8")
 
     file.write('config.doDetection=True\n')
     file.write('config.measureCoaddSources.measurement.plugins[\''
@@ -104,7 +112,7 @@ def make_setuphsc(loc):
     Returns:
     None
     '''
-    file = open(loc+'setuphsc.txt', 'w')
+    file = open(loc+'setuphsc.txt', 'w', encoding="utf-8")
 
     file.write('# Write your hscPipe setup configuration here, e.g.\n'
                '# setup-hscpipe\n'
@@ -116,7 +124,14 @@ def make_setuphsc(loc):
 
 
 def read_setuphsc(fname='./setuphsc.txt'):
-    with open(fname) as f:
+    with open(fname, encoding="utf-8") as f:
         lines = filter(None, (line.rstrip() for line in f
                               if not line.startswith('#')))
         return '\n'.join(lines)
+
+
+def create_directory(dirname):
+    try:
+        os.mkdir(dirname)
+    except FileExistsError:
+        pass

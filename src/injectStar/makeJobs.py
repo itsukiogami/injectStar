@@ -1,21 +1,52 @@
 import os
 import argparse
 import numpy as np
+import pandas as pd
 import injectStar.utils.bash_actions as bash_actions
 import injectStar.utils.config_actions as config_actions
 
 
+def group_mags(hscconfig):
+    '''
+    Creates all possible groupings of filter magnitudes
+
+    Parameters:
+    - hscconfig: A dictionary containing the filter configuration parameters.
+
+    Returns:
+    A pandas DataFrame with magnitude groupings
+    '''
+    # Make all possible magnitude pairs
+    filtnum = int(hscconfig['filters'])
+    for i in range(1, filtnum + 1):
+        filtname = hscconfig[f"filter{i}"]
+        mags = np.arange(float(hscconfig[f"mag_start{i}"]),
+                         float(hscconfig[f"mag_end{i}"]) +
+                         float(hscconfig['mag_step']),
+                         float(hscconfig['mag_step']))
+        tempdf = pd.DataFrame({filtname: mags})
+        tempdf['key'] = 0  # dummy key used for merging
+        if i == 1:
+            mags_grouped = tempdf
+        else:
+            mags_grouped = pd.merge(mags_grouped, tempdf,
+                                    on='key', how='outer')
+
+    return mags_grouped.drop('key', axis=1)
+
+
 def main(args):
-    # Read in config and generate magnitudes
+    '''
+    The main function
+    '''
+    # Read in config
     config = config_actions.read_config()
     hscconfig = config['hscPipe']
     setuphsc = config_actions.read_setuphsc()
 
-    # TODO Are same-magnitude pairs enough, or should we make a grid?
-    mags = np.arange(float(hscconfig['mag_start']),
-                     float(hscconfig['mag_end']) +
-                     float(hscconfig['mag_step']),
-                     float(hscconfig['mag_step']))
+    # Generate magnitude groups
+    mags_grouped = group_mags(hscconfig)
+    filtstring = '^'.join(mags_grouped.columns)  # Used in HSC commands
 
     # Rerun name for naming job files
     rerunname = os.path.basename(os.path.normpath(hscconfig['rerun']))
@@ -26,15 +57,20 @@ def main(args):
         suffix = 'sh'
 
     # Iterate over magnitudes and fill in the .sbatch files
-    for mag in mags:
+    for _, row in mags_grouped.iterrows():
+
+        # Used in file naming
+        magstring = [f'{value:.2f}' for _, value in row.items()]
+        magstring = '_'.join(magstring)
+
         # Generate file
-        fname = f"{rerunname}_{mag}.{suffix}"
-        file = open(fname, 'w')
+        fname = f"{rerunname}{magstring}.{suffix}"
+        file = open(fname, 'w', encoding="utf-8")
 
         # Write bash/slurm/hscpipe initialisations
         bash_actions.shebang(file)
         if args.use_slurm:
-            bash_actions.sbatch(config, file, mag)
+            bash_actions.sbatch(config, file, magstring)
         bash_actions.hsc_init(config, setuphsc, file)
 
         file.write('\n# Step 1: Copy the rerun directory.\n')
@@ -43,36 +79,31 @@ def main(args):
 
         file.write('\n# Step 2: Run injectStar on all filters.\n')
         file.write('echo "Running injectStar."\n')
-        filtkeys = [key for key in sorted(hscconfig.keys())
-                    if key.startswith('filter')]
-        for key in filtkeys:
-            bash_actions.inject_star(config, file, hscconfig[key], mag)
+        for filt, mag in row.items():
+            bash_actions.inject_star(config, file, filt, mag)
 
         file.write('\n# Step 3: Run detectCoaddSources on all filters.\n')
         file.write('echo "Running detectCoaddSources."\n')
-        for key in filtkeys:
-            bash_actions.detect_coadd(config, file, key)
+        for filt, _ in row.items():
+            bash_actions.detect_coadd(config, file, filt)
 
         file.write("\n# Step 4: Run multiBandDriver on all filters"
                    " simultaneously.\n")
         file.write('echo "Running multiBandDriver."\n')
-        filtstring = '^'.join([hscconfig[key] for key in filtkeys])
         bash_actions.multi_band(config, file, filtstring)
 
-        # TODO: Output catalog creation command
-        # (Might need to write a separate script for that!)
-        file.write('\n# Step 5: Generate a catalogue of output data.\n')
-        file.write('echo "Generating the output catalogue."\n')
-
-        # TODO: Check if one filter is enough for this
-        file.write('\n# Step 6: Generate a catalogue of all input sources.\n')
+        file.write('\n# Step 5: Generate a catalogue of all input sources.\n')
         file.write('echo "Generating the input catalogue."\n')
-        bash_actions.input_cat(config, file, mag)
+        for filt, _ in row.items():
+            bash_actions.input_cat(config, file, filt, magstring)
 
-        # TODO: Cross-match command
-        # (Might need to write a separate script for that!)
+        file.write('\n# Step 6: Generate a catalogue of output data.\n')
+        file.write('echo "Generating the output catalogue."\n')
+        bash_actions.output_cat(config, magstring)
+
         file.write('\n# Step 7: Cross-match input and output catalogues.\n')
         file.write('echo "Cross-matching catalogues."\n')
+        bash_actions.crossmatch(config, magstring)
 
         # Currently not deleting the rerun directory due to rsync
         # file.write('\n# Step 8: Delete the temporary coadd directory.\n')
@@ -84,6 +115,9 @@ def main(args):
 
 
 def parse_args():
+    '''
+    The argument parsing function
+    '''
     parser = argparse.ArgumentParser(
         description='Use makeJobs.py to generate BASH or SLURM batch files.'
         )
