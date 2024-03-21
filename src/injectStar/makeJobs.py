@@ -42,6 +42,8 @@ def main(args):
     # Read in config
     config = config_actions.read_config()
     hscconfig = config['hscPipe']
+    jobdir = os.path.normpath(config['dirs']['jobs']).replace(os.sep, '/')
+
     setuphsc = config_actions.read_setuphsc()
 
     # Generate magnitude groups
@@ -64,7 +66,8 @@ def main(args):
         magstring = '_'.join(magstring)
 
         # Generate file
-        fname = f"{rerunname}{magstring}.{suffix}"
+        print(jobdir)
+        fname = f"{jobdir}/{rerunname}_{magstring}.{suffix}"
         file = open(fname, 'w', encoding="utf-8")
 
         # Write bash/slurm/hscpipe initialisations
@@ -99,11 +102,11 @@ def main(args):
 
         file.write('\n# Step 6: Generate a catalogue of output data.\n')
         file.write('echo "Generating the output catalogue."\n')
-        bash_actions.output_cat(config, magstring)
+        bash_actions.output_cat(file, magstring)
 
         file.write('\n# Step 7: Cross-match input and output catalogues.\n')
         file.write('echo "Cross-matching catalogues."\n')
-        bash_actions.crossmatch(config, magstring)
+        bash_actions.crossmatch(file, magstring)
 
         # Currently not deleting the rerun directory due to rsync
         # file.write('\n# Step 8: Delete the temporary coadd directory.\n')
