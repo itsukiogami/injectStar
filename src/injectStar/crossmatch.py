@@ -3,7 +3,9 @@ import os
 import shutil
 import numpy as np
 import pandas as pd
-import injectStar.utils.config_actions as config_actions
+from injectStar.utils import config_actions
+from astropy.coordinates import SkyCoord
+from astropy import units as u
 
 
 def distance(x1, x2, y1, y2):
@@ -14,8 +16,19 @@ def distance(x1, x2, y1, y2):
     return np.hypot(x2 - x1, y2 - y1)
 
 
-def main(args):
+def angular_distance(ra1, ra2, dec1, dec2, unit_ra=u.deg, unit_deg=u.deg):
+    '''
+    Angular separation in arseconds
+    '''
+    c1 = SkyCoord(ra1, dec1, unit=(unit_ra, unit_deg))
+    c2 = SkyCoord(ra2, dec2, unit=(unit_ra, unit_deg))
+    return c1.separation(c2).degree/3600
 
+
+def main(args):
+    '''
+    The main function
+    '''
     config = config_actions.read_config(
              config_file=f"{args['workdir']}/config.txt")
     hscconfig = config['hscPipe']
@@ -60,10 +73,9 @@ def main(args):
         match_count = 0
         for j in range(len(input_df)):
             # If there's a star within 1 arcsec and 0.1 mag, it's a match
-            # TODO: better distance calculation with ra/dec
-            mask = (distance(input_df['ra'].iloc[j], output_df['ra'],
-                             input_df['dec'].iloc[j],
-                             output_df['dec']) < mindist**2)
+            mask = (angular_distance(input_df['ra'].iloc[j], output_df['ra'],
+                                     input_df['dec'].iloc[j],
+                                     output_df['dec']) < mindist)
             mask = mask & (np.abs(input_df['mag'].iloc[j] - output_df['mag'])
                            < minmag)
             if np.sum(mask) > 0:

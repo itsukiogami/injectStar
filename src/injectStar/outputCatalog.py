@@ -1,15 +1,15 @@
-#!/usr/bin/env python
-
 import argparse
 import os
 import numpy as np
 import pandas as pd
-import injectStar.utils.config_actions as config_actions
-import lsst.daf.persistence as dafPersist
+from injectStar.utils import config_actions
+from lsst.daf.persistence import Butler
 
 
 def main(args):
-
+    '''
+    The main function
+    '''
     zp = 27.0  # Zeropoint
 
     # Read in config and generate magnitudes
@@ -26,7 +26,7 @@ def main(args):
 
     for f in filters:
         # make a butler
-        butler = dafPersist.Butler(hscdir)
+        butler = Butler(hscdir)
         data_all = os.listdir(f"{hscdir}/deepCoadd-results/{f}"
                               f"/{tract}/")
         n1 = len(data_all)
@@ -73,9 +73,10 @@ def main(args):
         flux = s.get('base_PsfFlux_instFlux')
         flux_err = s.get('base_PsfFlux_instFluxErr')
         flag = m.get('base_PixelFlags_flag_fakeCenter')
-        mask = (fluxpsf[i] > 0)
+        mask = fluxpsf[i] > 0
         # TODO: Should we use the other flags below as well?
-        # TODO: Probably implement Pucha extendedness for masking
+        # TODO: Probably implement Pucha et al. extendedness for masking
+        # if we end up using this
         # and s.get(key_extend)== 0 :#and m.get(key_primary) == True :
         # and m.get(key_flag_edge) == True
         # and s.get(key_flag_sat) == True
@@ -102,7 +103,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
              description='Use outputCatalog.py to create '
                          'the hscPipe output catalog of the '
-                         'artificial star test run \n'
+                         'artificial star test run.\n'
                          'This script is intended to be '
                          'run via a job file and not manually.'
         )
@@ -111,10 +112,6 @@ def parse_args():
     parser.add_argument('magstring',
                         help='A string representing the'
                         'magnitudes used in this run.')
-    # parser.add_argument("root", help="Root directory of data repository")
-    # parser.add_argument("tract", type=int, help="Tract to show")
-    # parser.add_argument("filter", help="Filter to show")
-    # args = parser.parse_args()
     return parser.parse_args()
 
 

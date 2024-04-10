@@ -2,8 +2,8 @@ import os
 import argparse
 import numpy as np
 import pandas as pd
-import injectStar.utils.bash_actions as bash_actions
-import injectStar.utils.config_actions as config_actions
+from injectStar.utils import bash_actions
+from injectStar.utils import config_actions
 
 
 def group_mags(hscconfig):
@@ -66,7 +66,6 @@ def main(args):
         magstring = '_'.join(magstring)
 
         # Generate file
-        print(jobdir)
         fname = f"{jobdir}/{rerunname}_{magstring}.{suffix}"
         file = open(fname, 'w', encoding="utf-8")
 

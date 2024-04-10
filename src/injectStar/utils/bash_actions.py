@@ -120,7 +120,7 @@ def multi_band(config, file, filtstring):
     command += ' --rerun $rerun'
     command += f" --id filter={filtstring}"
     command += f" tract={hscconfig['tract']}"
-    command += ' --configfile artest_config.py'
+    command += ' --configfile ../artest_config.py'
     command += ' --clobber-config'
     command += ' --clobber-versions'
     command += ' --batch-type=smp'
@@ -194,8 +194,8 @@ def output_cat(file, magstring):
     Returns:
     None
     '''
-    command = f"outputCatalog.py {os.getcwd()}" \
-              f" {magstring}"
+    command = f"python3 -m injectStar.outputCatalog {os.getcwd()}" \
+              f" {magstring}\n"
 
     file.write(command)
 
@@ -212,8 +212,8 @@ def crossmatch(file, magstring):
     Returns:
     None
     '''
-    command = f"outputCatalog.py {os.getcwd()}" \
-              f" {magstring}"
+    command = f"python3 -m injectStar.crossmatch {os.getcwd()}" \
+              f" {magstring}\n"
 
     file.write(command)
 
