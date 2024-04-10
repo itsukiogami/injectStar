@@ -30,7 +30,7 @@ def main(args):
     The main function
     '''
     config = config_actions.read_config(
-             config_file=f"{args['workdir']}/config.txt")
+             config_file=f"{args.workdir}/config.txt")
     hscconfig = config['hscPipe']
     dirconfig = config['dirs']
 
@@ -39,7 +39,7 @@ def main(args):
 
     filters = [hscconfig[key] for key in sorted(hscconfig.keys())
                if key.startswith('filter')]
-    magstring = args['magstring']
+    magstring = args.magstring
     mags = magstring.spli('_')
     rerun = os.path.basename(os.path.normpath(hscconfig['rerun']))
 
@@ -86,14 +86,14 @@ def main(args):
         matches[f"{f}_ratio_err"] = np.sqrt(match_count)/len(input_df)
 
     # Save the matches
-    sname = f"{args['workdir']}/matches.csv"
+    sname = f"{args.workdir}/matches.csv"
     if os.path.exists(sname):
         matches_df = pd.read_csv(sname, **csv_kwargs)
         if set(matches_df.columns) != set(matches.keys()):
             print('WARNING: matches.csv has different filters'
                   'than the current ast run.')
             print('Making a copy of the original matches.csv file.')
-            shutil.copyfile(sname, f"{args['workdir']}/matches_copy.csv")
+            shutil.copyfile(sname, f"{args.workdir}/matches_copy.csv")
             matches.to_csv(sname, index=False)
         else:
             matches = matches_df.append(matches, ignore_index=True)

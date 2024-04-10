@@ -14,7 +14,7 @@ def main(args):
 
     # Read in config and generate magnitudes
     config = config_actions.read_config(
-             config_file=f"{args['workdir']}/config.txt")
+             config_file=f"{args.workdir}/config.txt")
     hscconfig = config['hscPipe']
     outputdir = os.path.normpath(config['dirs']['output']).replace(os.sep, '/')
 
@@ -95,7 +95,7 @@ def main(args):
 
         # Save to a file
         df = pd.DataFrame(data)
-        df.to_csv(outputdir + f"output_{f}_{args['magstring']}.output.csv",
+        df.to_csv(outputdir + f"output_{f}_{args.magstring}.output.csv",
                   index=False)
 
 
