@@ -19,10 +19,10 @@ def main(args):
     outputdir = os.path.normpath(config['dirs']['output']).replace(os.sep, '/')
 
     origrerun = os.path.normpath(hscconfig['rerun']).replace(os.sep, '/')
-    hscdir = os.path.dirname(os.path.dirname(origrerun))
-    filters = [hscconfig[key] for key in sorted(hscconfig.keys())
-               if key.startswith('filter')]
-    tract = hscconfig['tract']
+    hscdir = os.path.dirname(origrerun)+'/artest'
+    filters = [hscconfig[f"filter{i}"] 
+               for i in range(1, int(hscconfig['filters']) + 1)]
+    tract = int(hscconfig['tract'])
 
     for f in filters:
         # make a butler
@@ -39,7 +39,7 @@ def main(args):
         meas = butler.get("deepCoadd_meas", data_id)  # load catalog
         # n = len(sources)  # count the number of catalog
         # get the psf flux and schema
-        fluxpsf = sources.getPsfInstFlux()  # get psfflux
+        # fluxpsf = sources.getPsfInstFlux()  # get psfflux (not needed)
         # schema_s = sources.getSchema()  # get schema of sources
         # schema_m = meas.getSchema()  # get schema of meas
         # get specific column of sources and meas schema
@@ -64,16 +64,15 @@ def main(args):
         # for col in cols_m:
         #     keys_m[col] = schema_m.find(col).key
 
-        # TODO: I REALLY hope we don't have to for loop this
-        # for i in range(n):
-        s = sources  # [i]
-        m = meas  # [i]
-        ra = s.get('coord_ra')
-        dec = s.get('coord_dec')
-        flux = s.get('base_PsfFlux_instFlux')
-        flux_err = s.get('base_PsfFlux_instFluxErr')
-        flag = m.get('base_PixelFlags_flag_fakeCenter')
-        mask = fluxpsf[i] > 0
+        ids = np.array([source.getId() for source in sources])
+        ra = np.array([s.get('coord_ra').asDegrees() for s in sources])
+        dec = np.array([s.get('coord_dec').asDegrees() for s in sources])
+        flux = np.array([s.get('base_PsfFlux_instFlux') for s in sources])
+        flux_err = np.array([s.get('base_PsfFlux_instFluxErr')
+                             for s in sources])
+        flag = np.array([m.get('base_PixelFlags_flag_fakeCenter')
+                         for m in meas])
+        mask = flux > 0 # Get rid of negative fluxes
         # TODO: Should we use the other flags below as well?
         # TODO: Probably implement Pucha et al. extendedness for masking
         # if we end up using this
@@ -81,21 +80,19 @@ def main(args):
         # and m.get(key_flag_edge) == True
         # and s.get(key_flag_sat) == True
         # and m.get(key_offimage) == True :
-        # TODO: Check if flux and fluxpsf are different
-        mag = -2.5 * np.log10(fluxpsf[mask]) + zp
-        # TODO: If they're not, fix the flux (not fluxpsf) usage in errors
-        mag_err = np.abs(-2.5/(np.log(10.) * flux[mask]) * flux_err[mask])
-        data = {'id': s.getId(),
-                'ra': ra.asDegrees(),
-                'dec': dec.asDegrees(),
+        mag = -2.5 * np.log10(flux) + zp
+        mag_err = np.abs(-2.5/(np.log(10) * flux) * flux_err)
+        data = {'id': ids,
+                'ra': ra,
+                'dec': dec,
                 'mag': mag,
                 'mag_err': mag_err,
                 'flag': flag
                 }
 
         # Save to a file
-        df = pd.DataFrame(data)
-        df.to_csv(outputdir + f"output_{f}_{args.magstring}.output.csv",
+        df = pd.DataFrame(data).loc[mask] # Mask out bad mags
+        df.to_csv(outputdir + f"/output_{f}_{args.magstring}.csv",
                   index=False)
 
 
