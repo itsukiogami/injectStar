@@ -17,7 +17,9 @@ The HSC pipeline is used for processing astronomical data collected by the Hyper
 
 To install this package, ensure that you have hscPipe (version 6 or above) installed and initialised on your machine:
 >`setup-hscpipe`
+
 or
+
 >`source /path/to/hscpipe/8.4/loadLSST.bash`
 >`setup hscPipe 8.4`
 
@@ -26,7 +28,7 @@ You can clone the repository and install it manually with `pip`:
 >`cd injectStar`
 >`pip install .`
 
-The package will then always when `hscPipe` is activated on the machine.
+The package will then always be available when `hscPipe` is activated on the machine.
 
 ## Usage
 The `injectStar` package can be used in slurm/bash job script mode for running artificial star tests for testing multiple magnitudes, but it can also be used manually.
