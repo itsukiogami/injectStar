@@ -1,8 +1,94 @@
 # Artificial Star Test for hscPipe
-This repositry describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond.
+This repository describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond.
 The latest version of `injectStar.py` is version 4.
 
-## Flow of obtaining detection completeness
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Method 1: Slurm/bash job scripts](#method-1-slurmbash-job-scripts)
+  - [Method 2: Run injectStar manually](#method-2-run-injectstar-manually)
+
+## Introduction
+The HSC pipeline is used for processing astronomical data collected by the Hyper Suprime-Cam on the Subaru Telescope. This package allows researchers to inject artificial stars into the HSC pipeline data and analyze the results to simulate observational conditions and assess the performance of the pipeline.
+
+## Installation
+
+To install this package, ensure that you have hscPipe (version 6 or above) installed and initialised on your machine:
+>`setup-hscpipe`
+or
+>`source /path/to/hscpipe/8.4/loadLSST.bash`
+>`setup hscPipe 8.4`
+
+You can clone the repository and install it manually with `pip`:
+>`git clone https://github.com/itsukiogami/injectStar.git`
+>`cd injectStar`
+>`pip install .`
+
+The package will then always when `hscPipe` is activated on the machine.
+
+## Usage
+The `injectStar` package can be used in slurm/bash job script mode for running artificial star tests for testing multiple magnitudes, but it can also be used manually.
+
+### Method 1: Slurm/bash job scripts
+
+#### Setting up
+Create a directory where the job scripts and artificial star tests results will be held:
+
+>`mkdir ast_workspace`
+>`cd ast_workspace`
+
+Then run
+
+>`injectStar.prepareWorkspace`
+
+This will create a few directories and files.
+```
+ast_workspace/ 
+│   ├── input/
+│   ├── jobs/
+│   ├── output/
+├──artest_config.py
+├──config.txt
+└──setuphsc.txt
+```
+1. The `artest_config.py` file contains modifications to the `hscPipe`'s `multiBandDriver.py` routine so that the artificial stars get processed appropriately. If you changed the configuration of `multiBandDriver.py` when processing your images, add the configuration files to `artest_config.py` for consistent processing.
+
+2. The `config.txt` file contains the customisation parameters for running InjectStar.
+    1. `[hscPipe]` is the main section. 
+    `rerun` is the location of your hscPipe rerun.
+    `mag_start1` and `mag_end1` are the start and finish of the testable range for the first filter. The sampling step is dictated by `mag_step` and is universally used for all filters being tested.
+    2. `[slurm]` contains relevant parameters if you are planning to use the Slurm workload manager to run your artificial star tests.
+    3. `[dirs]` contains the workspace directories. This is configured upon setup and does not need editing unless you want to move the workspace or its subdirectories.
+
+2. You should add the command that you use to set up your hscPipe installation to `setuphsc.txt`, e.g.:
+>`source /path/to/hscpipe/8.4/loadLSST.bash`
+>`setup hscPipe 8.4`
+
+#### Running the job maker
+Ensure you are currently in the workspace directory: 
+>`cd ast_workspace`
+Run
+>`python injectStar.makeJobs --use_slurm`
+
+This will create slurm job scripts for all possible requested magnitude combinations in the `jobs/` directory. **The jobs have to be run one at a time.** The results from the artificial star tests will be contained in `matches.csv` file, which will be located in your workspace.
+
+If you want to use bash `.sh` script files instead of `.sbatch` slurm files, you can run the `makeJobs` module without the `--use_slurm` flag.
+
+#### Steps made by the job files
+While the job scripts are set up to be run without any necessary modification, the steps in the job scripts are modular and easy to modify. The order of the steps is as follows:
+
+0. Set up hscPipe;
+1. Copy the rerun directory, the copied directory is named `artest/`;
+2. Run `injectStar.injectStar` with given filter magnitudes;
+3. Run the hscPipe `detectCoaddSources.py` routine;
+4. Run the hscPipe `multiBandDriver.py` routine;
+5. Generate the input source catalogue on `input/`;
+6. Run `injectStar.outputCatalog` to generate the output catalogue on `output/`;
+7. Run `injectStar.crossmatch` to cross-match input and output catalogues and save the results in `matches.csv`.
+
+### Method 2: Run injectStar manually
 0. As with other hscPipe commands, run `setup-hscpipe` or `setup hscPipe 8.4`.
    
 1. Copy `rerun` containing the image (e.g., `~/<rerun>/deepCoadd/<filter>/4,4.fits`) in which you want to inject the artificial star.
@@ -10,7 +96,7 @@ The latest version of `injectStar.py` is version 4.
   - Also, a copy of rerun must be executed every time the artificial star test is performed.
   - This is because artificial stars are embedded again in the image in which artificial stars are embedded.
  
-2. Run `injectStar.py` to embed artificial stars in the coadd-image (e.g., `~/<rerun>/deepCoadd/<filter>/4.4.fits`).
+2. Run `injectStar.injectStar` to embed artificial stars in the coadd-image (e.g., `~/<rerun>/deepCoadd/<filter>/4.4.fits`).
   - `injectStar.py` is to embed the artificial stars of any magnitude in `~/<rerun>/deepCoadd/<filter>/<tract>/<patch>/<patch>.fits`.
   - Run `injectStar.py` as follows
     `python3 injectStar.py <path-to-rerun> <filter> <tract> <magnitude of artificial stars to be embedded>`
