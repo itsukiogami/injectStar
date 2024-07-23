@@ -1,14 +1,14 @@
 # Artificial Star Test for hscPipe
-This repositry describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond.
+This repositry describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond (we have confirmed that `injectStar.py` can be executed in hescPipe 6.7/8.4/8.5.3).
 The latest version of `injectStar.py` is version 4.
-If you prepare a paper using this injectStar.py, please cite [Ogami et al. (2024a)](https://ui.adsabs.harvard.edu/abs/2024arXiv240100668O/abstract).
+If you prepare a paper with this `injectStar.py`, please cite [Ogami et al. (2024a)](https://ui.adsabs.harvard.edu/abs/2024arXiv240100668O/abstract).
 
 ## Flow of obtaining detection completeness
 0. As with other hscPipe commands, run `setup-hscpipe` or `setup hscPipe 8.4`.
    
-1. Copy `rerun` containing the image (e.g., `~/<rerun>/deepCoadd/<filter>/4,4.fits`) in which you want to inject the artificial star.
-  - Since `injectStar.py` embeds artificial stars directly into the image, it is necessary to make a backup of original images.
-  - Also, a copy of rerun must be executed every time the artificial star test is performed.
+1. Copy `rerun` containing the output image/catalog (e.g., `~/<rerun>/deepCoadd/<filter>/4,4.fits`) in which you would like to inject the artificial star.
+  - Since `injectStar.py` embeds artificial stars directly into the image, **it is necessary to make a backup of original images/catalogs**.
+  - Also, a copy of `rerun` must be executed every time the artificial star test is performed.
   - This is because artificial stars are embedded again in the image in which artificial stars are embedded.
  
 2. Run `injectStar.py` to embed artificial stars in the coadd-image (e.g., `~/<rerun>/deepCoadd/<filter>/4.4.fits`).
@@ -19,10 +19,11 @@ If you prepare a paper using this injectStar.py, please cite [Ogami et al. (2024
     - `<filter>` should be the same as hscPipe, such as `HSC-G`, `HSC-R2`, `HSC-I2`, `NB0515`.
     - When you finish executing `injectStar.py`, artificial stars are embedded in the image.
     - The catalog of artificial stars you input in each patch is constructed as `~/<rerun>/deepCoadd/<filter>/<tract>/<patch>/<patch>.fits.txt`.
+    - The version of python that is in hscPipe 6.7/8.4/8.5.3 will not cause errors.
 
 3. Run `detectCoaddSources.py` to perform the detection of images with embedded artificial stars.
   - Run `detectCoaddSources.py` as follows
-    > `detectCoaddSources.py ~HSC --calib ~/HSC/CALIB --rerun <rerun> --id filter=<filter> tract=<tract> --clobber-config --clobber-versions`
+    > `detectCoaddSources.py ~/HSC --calib ~/HSC/CALIB --rerun <rerun> --id filter=<filter> tract=<tract> --clobber-config --clobber-versions`
    
 4. Run `multiBandDriver.py` to perform the photometry of images with embedded artificial stars.
   - `multiBandDriver.py` is executed as follows:
@@ -39,10 +40,10 @@ If you prepare a paper using this injectStar.py, please cite [Ogami et al. (2024
 5. Create a catalog of output data.
   - The catalog should be created for objects with 'extendedness==0' and 'flux>0'.
   - In science catalogs, flags such as 'detect_isPrimary', 'base_PixelFlags_flag_edge', and 'base_PixelFlags_flag_offimage' must be set to 'True', but 'injectStar.py' does not handle these flags. (Actually, it is necessary to do so). Therefore, do not use these flags.
-  - When building the catalog, also include `tract` information. This is necessary for cross-matching input and output data. This process is not a problem when creating a catalog for each tract, individually.
+  - When building the catalog, we recommend to include `tract` information. This is necessary for cross-matching input and output data. This process is not a problem when creating a catalog for each tract, individually.
   - The flag for artificial stars ("FAKE" flag) corresponds `to base_PixelFlags_flag_fake` and `base_PixelFlags_flag_fakeCenter`.
-    - `base_PixelFlags_flag_fake`: Flag set to `True` if the footprint of the object is near the pixel that sets the "FAKE" flag.
-    - `base_PixelFlags_flag_fakeCenter`: Flag set to `True` if the center of the object is near the pixel that sets the "FAKE" flag.
+    - `base_PixelFlags_flag_fake`: Flag set to `True` if the footprint of the object is located on/around the pixel that sets the "FAKE" flag.
+    - `base_PixelFlags_flag_fakeCenter`: Flag set to `True` if the center of the object is located on the pixel that sets the "FAKE" flag.
     - Currently, it is recommended to use `base_PixelFlags_flag_fakeCenter`.
  
 6. Create a catalog for input data.
