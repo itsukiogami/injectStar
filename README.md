@@ -34,8 +34,8 @@ If you prepare a paper with this `injectStar.py`, please cite [Ogami et al. (202
       > config.doDetection=True
       > config.measureCoaddSources.measurement.plugins['base_PixelFlags'].masksFpAnywhere=['CLIPPED', 'SENSOR_EDGE', 'INEXACT_PSF', 'BRIGHT_ OBJECT', 'FAKE']]
       > config.measureCoaddSources.measurement.plugins['base_PixelFlags'].masksFpCenter=['CLIPPED', 'SENSOR_EDGE', 'INEXACT_PSF', 'BRIGHT_ OBJECT', 'FAKE']]
-      > config.forcedPhotCoadd.measurement.plugins['base_PixelFlags'].masksFpAnywhere=['CLIPPED', 'SENSOR_EDGE', 'REJECTED', 'INEXACT_PSF', ' BRIGHT_OBJECT', 'FAKE']]
-      > config.forcedPhotCoadd.measurement.plugins['base_PixelFlags'].masksFpCenter=['CLIPPED', 'SENSOR_EDGE', 'REJECTED', 'INEXACT_PSF', ' BRIGHT_OBJECT', 'FAKE']]
+      > config.forcedPhotCoadd.measurement.plugins['base_PixelFlags'].masksFpAnywhere=['CLIPPED', 'SENSOR_EDGE', 'REJECTED', 'INEXACT_PSF', 'BRIGHT_OBJECT', 'FAKE']]
+      > config.forcedPhotCoadd.measurement.plugins['base_PixelFlags'].masksFpCenter=['CLIPPED', 'SENSOR_EDGE', 'REJECTED', 'INEXACT_PSF', 'BRIGHT_OBJECT', 'FAKE']]
 
 5. Create a catalog of output data.
   - The catalog should be created for objects with 'extendedness==0' and 'flux>0'.
