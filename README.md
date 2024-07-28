@@ -30,10 +30,11 @@ If you prepare a paper with this `injectStar.py`, please cite [Ogami et al. (202
     > `multiBandDriver.py ~/HSC --calib ~/HSC/CALIB --rerun <rerun> --id filter=<filter> tract=<tract> --configfile config.py --clobber-config -- clobber-versions`
     - Be sure to describe all `<filter>` being analyzed.
     - You can specify multiple `<tract>`.
+    - The number of CORE (using `--cores=`) and PATCH (using `--batch-type=`) must be specified.
     - `config.py` should be written as follows.
       > config.doDetection=True
-      > config.measureCoaddSources.measurement.plugins['base_PixelFlags'].masksFpAnywhere=['CLIPPED', 'SENSOR_EDGE', 'INEXACT_PSF', 'BRIGHT_ OBJECT', 'FAKE']]
-      > config.measureCoaddSources.measurement.plugins['base_PixelFlags'].masksFpCenter=['CLIPPED', 'SENSOR_EDGE', 'INEXACT_PSF', 'BRIGHT_ OBJECT', 'FAKE']]
+      > config.measureCoaddSources.measurement.plugins['base_PixelFlags'].masksFpAnywhere=['CLIPPED', 'SENSOR_EDGE', 'INEXACT_PSF', 'BRIGHT_OBJECT', 'FAKE']]
+      > config.measureCoaddSources.measurement.plugins['base_PixelFlags'].masksFpCenter=['CLIPPED', 'SENSOR_EDGE', 'INEXACT_PSF', 'BRIGHT_OBJECT', 'FAKE']]
       > config.forcedPhotCoadd.measurement.plugins['base_PixelFlags'].masksFpAnywhere=['CLIPPED', 'SENSOR_EDGE', 'REJECTED', 'INEXACT_PSF', 'BRIGHT_OBJECT', 'FAKE']]
       > config.forcedPhotCoadd.measurement.plugins['base_PixelFlags'].masksFpCenter=['CLIPPED', 'SENSOR_EDGE', 'REJECTED', 'INEXACT_PSF', 'BRIGHT_OBJECT', 'FAKE']]
 
