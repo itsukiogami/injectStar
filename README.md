@@ -1,7 +1,7 @@
 # [Artificial Star Test for hscPipe](https://github.com/itsukiogami/injectStar)
 This repositry describes a method for calculating a detection completeness using artificial stars in hscPipe 6 and beyond (we have confirmed that `injectStar.py` can be executed in hescPipe 6.7/8.4/8.5.3).
-The latest version of `injectStar.py` is version 4.
-If you prepare a paper with this `injectStar.py`, please cite [Ogami et al. (2024a)](https://ui.adsabs.harvard.edu/abs/2024arXiv240100668O/abstract).
+The latest version of `injectStar.py` is version 4, and please download its source file from [here](https://github.com/itsukiogami/injectStar).
+If you prepare a paper with this `injectStar.py`, please cite [Ogami et al. (2025)](https://ui.adsabs.harvard.edu/abs/2024arXiv240100668O/abstract).
 
 ## Flow of obtaining detection completeness
 0. As with other hscPipe commands, run `setup-hscpipe` or `setup hscPipe 8.4`.
